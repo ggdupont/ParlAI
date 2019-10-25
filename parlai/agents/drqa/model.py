@@ -137,22 +137,76 @@ class DocReaderModel(object):
         score_s = score_s.data.cpu()
         score_e = score_e.data.cpu()
 
-        # Get argmax text spans
         text = ex[-2]
         spans = ex[-1]
         predictions = []
         pred_scores = []
-        max_len = self.opt['max_len'] or score_s.size(1)
-        for i in range(score_s.size(0)):
-            scores = torch.ger(score_s[i], score_e[i])
-            scores.triu_().tril_(max_len - 1)
-            scores = scores.numpy()
-            s_idx, e_idx = np.unravel_index(np.argmax(scores), scores.shape)
-            s_offset, e_offset = spans[i][s_idx][0], spans[i][e_idx][1]
-            predictions.append(text[i][s_offset:e_offset])
-            pred_scores.append(np.max(scores))
 
+        #########################
+        # Extract top N scores and span and not only the argmax/top1
+        #########################
+        top_n = 5  ## TODO pass this as model option
+        max_len = self.opt['max_len'] or score_s.size(1)
+        pred_s, pred_e, pred_score = self.decode(score_s, score_e, top_n, max_len)
+
+        # print('DrQA prediction {} spans score start: {}'.format(len(pred_s[0]), pred_s))
+        # print('DrQA prediction {} spans score end: {}'.format(len(pred_e[0]), pred_e))
+        # print('DrQA prediction spans: {}'.format(spans))
+        # print('DrQA prediction {} scores: {}'.format(len(pred_score[0]), pred_score[0]))
+        # print('text={}'.format(text))
+
+        for idx in range(0, len(pred_score[0])):
+            s_offset, e_offset = spans[0][pred_s[0][idx]][0], spans[0][pred_e[0][idx]][1]
+            predicted_answer = text[0][s_offset:e_offset]
+            score = pred_score[0][idx]
+            # print('DrQA {}th prediction @{} score span {}: {}'.format(idx, score, (s_offset, e_offset), predicted_answer))
+
+            predictions.append(predicted_answer)
+            pred_scores.append(score)
+
+        print('DrQA {} predictions with score: \n{}\n{}'.format(len(predictions), predictions, pred_scores))
         return predictions, pred_scores
+
+    @staticmethod
+    def decode(score_s, score_e, top_n=1, max_len=None):
+        """Take argmax of constrained score_s * score_e.
+        Args:
+            score_s: independent start predictions
+            score_e: independent end predictions
+            top_n: number of top scored pairs to take
+            max_len: max span length to consider
+        """
+        pred_s = []
+        pred_e = []
+        pred_score = []
+        max_len = max_len or score_s.size(1)
+        for i in range(score_s.size(0)):
+            # Outer product of scores to get full p_s * p_e matrix
+            scores = torch.ger(score_s[i], score_e[i])
+
+            # Zero out negative length and over-length span scores
+            scores.triu_().tril_(max_len - 1)
+
+            # Take argmax or top n
+            scores = scores.numpy()
+            scores_flat = scores.flatten()
+            if top_n == 1:
+                idx_sort = [np.argmax(scores_flat)]
+            elif len(scores_flat) < top_n:
+                idx_sort = np.argsort(-scores_flat)
+            else:
+                idx = np.argpartition(-scores_flat, top_n)[0:top_n]
+                idx_sort = idx[np.argsort(-scores_flat[idx])]
+
+            # print('idx_sort={}'.format(idx_sort))
+            
+            s_idx, e_idx = np.unravel_index(idx_sort, scores.shape)
+            pred_s.append(s_idx)
+            pred_e.append(e_idx)
+            pred_score.append(scores_flat[idx_sort])
+        return pred_s, pred_e, pred_score
+
+
 
     def reset_parameters(self):
         # Reset fixed embeddings to original value

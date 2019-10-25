@@ -203,6 +203,15 @@ class DrqaAgent(Agent):
             reply['text_candidates'] = [prediction[0]]
             reply['candidate_scores'] = [score[0]]
 
+            if len(prediction) > 1 :
+                # print('DrQA found {} possible answers: {}'.format(len(prediction), prediction))
+                reply['alternates'] = list()
+                for idx in range(1, len(prediction)):
+                    alternate = dict()
+                    alternate['text_candidate'] = prediction[idx]
+                    alternate['candidate_score'] = score[idx]
+                    reply['alternates'].append(alternate)
+
         reply['metrics'] = {'train_loss': self.model.train_loss.avg}
         return reply
 
