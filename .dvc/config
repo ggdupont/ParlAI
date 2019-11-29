@@ -1,0 +1,4 @@
+['remote "aws-lab117"']
+url = s3://lea-qa-bot/ParlAI
+[core]
+remote = aws-lab117
