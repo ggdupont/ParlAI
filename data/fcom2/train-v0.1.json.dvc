@@ -1,0 +1,7 @@
+md5: 1b7dc93ba826854fab6e2063775d4c32
+outs:
+- md5: 4915f6fa3269974bed6265b62ba96b32
+  path: train-v0.1.json
+  cache: true
+  metric: false
+  persist: false

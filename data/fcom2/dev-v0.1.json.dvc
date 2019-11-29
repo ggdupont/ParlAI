@@ -1,0 +1,7 @@
+md5: b7d39d6330b5318e7a417484baa3f24d
+outs:
+- md5: 4915f6fa3269974bed6265b62ba96b32
+  path: dev-v0.1.json
+  cache: true
+  metric: false
+  persist: false
