@@ -1,7 +1,0 @@
-md5: 475e075a9bd4ad3d3afe08136b81df88
-outs:
-- md5: 5d2f77d6200aebf92bcb3b52cf5a1128.dir
-  path: fcom2
-  cache: true
-  metric: false
-  persist: false
