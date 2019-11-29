@@ -1,0 +1,7 @@
+md5: c354add827f857cc0301024e96b42ab1
+outs:
+- md5: 24f3ed7a0661c48740f5ef417fb28056
+  path: fcom_parlai_data.json
+  cache: true
+  metric: false
+  persist: false
