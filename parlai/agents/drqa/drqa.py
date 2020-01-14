@@ -206,7 +206,7 @@ class DrqaAgent(Agent):
             if len(prediction) > 1 :
                 # print('DrQA found {} possible answers: {}'.format(len(prediction), prediction))
                 reply['alternates'] = list()
-                for idx in range(1, len(prediction)):
+                for idx in range(0, len(prediction)):
                     alternate = dict()
                     alternate['text_candidate'] = prediction[idx]
                     alternate['candidate_score'] = score[idx]
