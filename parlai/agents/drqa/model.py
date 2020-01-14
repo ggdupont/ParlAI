@@ -164,7 +164,7 @@ class DocReaderModel(object):
             predictions.append(predicted_answer)
             pred_scores.append(score)
 
-        print('DrQA {} predictions with score: \n{}\n{}'.format(len(predictions), predictions, pred_scores))
+        # print('DrQA {} predictions with score: \n{}\n{}'.format(len(predictions), predictions, pred_scores))
         return predictions, pred_scores
 
     @staticmethod
