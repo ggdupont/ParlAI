@@ -63,7 +63,7 @@ class BertqaAgent(Agent):
         top_k_span = 3
         candidates = []
         sorted_candidates = get_candidates(inferences, order=True)
-        sorted_candidates = sorted_candidates[:self.top_k_candidates]
+        sorted_candidates = sorted_candidates[:(self.top_k_candidates+1)]
 
         solr_docs_set = {}
         for i, d in enumerate(solr_docs):
