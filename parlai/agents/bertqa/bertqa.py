@@ -115,7 +115,7 @@ class BertqaAgent(Agent):
         reply['id'] = self.getID()
 
         if self.solr_docs:
-            solr_docs = self.solr_docs[:(self.top_k_doc+1)]
+            solr_docs = self.solr_docs[:self.top_k_doc]
 
             top_passages = []
             for d in solr_docs:
@@ -153,7 +153,7 @@ class BertqaAgent(Agent):
             )
 
             sorted_candidates = get_candidates(inferences, order=True)
-            sorted_candidates = sorted_candidates[:(self.top_k_candidates+1)]
+            sorted_candidates = sorted_candidates[:self.top_k_candidates]
 
             reply['text'] = sorted_candidates[0].span
             reply['text_candidates'] = []
