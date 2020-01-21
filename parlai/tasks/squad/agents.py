@@ -74,6 +74,7 @@ class IndexTeacher(FixedDialogTeacher):
         context = paragraph['context']
 
         action = {
+            'qaid': qa['id'],
             'id': 'squad',
             'text': context + '\n' + question,
             'labels': answers,

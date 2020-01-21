@@ -57,6 +57,7 @@ class IndexTeacher(FixedDialogTeacher):
         plausible = qa.get("plausible_answers", [])
 
         action = {
+            'qaid': qa['id'],
             'id': 'squad',
             'text': context + '\n' + question,
             'labels': answers,

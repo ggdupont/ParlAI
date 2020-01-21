@@ -23,6 +23,7 @@ from parlai.core.metrics import aggregate_task_reports
 from parlai.core.worlds import create_task
 from parlai.utils.misc import TimeLogger
 
+import json
 import random
 
 
@@ -31,6 +32,7 @@ def setup_args(parser=None):
         parser = ParlaiParser(True, True, 'Evaluate a model')
     parser.add_pytorch_datateacher_args()
     # Get command line arguments
+    parser.add_argument('-rp', '--report', type=str, default="/tmp/eval_model.json")
     parser.add_argument('-ne', '--num-examples', type=int, default=-1)
     parser.add_argument('-d', '--display-examples', type='bool', default=False)
     parser.add_argument('-ltim', '--log-every-n-secs', type=float, default=2)
@@ -87,9 +89,12 @@ def _eval_single_world(opt, agent, task):
         if log_time.time() > log_every_n_secs:
             report = world.report()
             text, report = log_time.log(report['exs'], world.num_examples(), report)
-            print(text)
+            with open(opt.get('report'), 'w') as f:
+                json.dump(report, f, indent=4)
 
     report = world.report()
+    with open(opt.get('report'), 'w') as f:
+        json.dump(report, f, indent=4)
     world.reset()
     return report
 

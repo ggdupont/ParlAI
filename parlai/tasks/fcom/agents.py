@@ -120,6 +120,78 @@ class DefaultTeacher(DialogTeacher):
                     yield (context + '\n' + question, answers), True
 
 
+class DefaultWithIdTeacher(FixedDialogTeacher):
+    """Hand-written SQuAD teacher adapted from the SQuAD2 to fcom.
+
+    It loads the json squad data and
+    implements its own `act()` method for interacting with student agent,
+    rather than inheriting from the core Dialog Teacher. This code is here as
+    an example of rolling your own without inheritance.
+
+    This teacher also provides access to the "answer_start" indices that
+    specify the location of the answer in the context.
+    """
+
+    version = 0.1
+
+    def __init__(self, opt, shared=None):
+        build(opt)
+        super().__init__(opt, shared)
+
+        if self.datatype.startswith('train'):
+            suffix = 'train'
+        else:
+            suffix = 'dev'
+        datapath = os.path.join(opt['datapath'], 'fcom', suffix + '-v{}.json'.format(IndexTeacher.version))
+        self.data = self._setup_data(datapath)
+
+        self.id = 'fcom'
+        self.reset()
+
+    def num_examples(self):
+        return len(self.examples)
+
+    def num_episodes(self):
+        return self.num_examples()
+
+    def get(self, episode_idx, entry_idx=None):
+        article_idx, paragraph_idx, qa_idx = self.examples[episode_idx]
+        article = self.squad[article_idx]
+        paragraph = article['paragraphs'][paragraph_idx]
+        qa = paragraph['qas'][qa_idx]
+        question = qa['question']
+        answers = []
+        if not qa['is_impossible']:
+            for a in qa['answers']:
+                answers.append(a['text'])
+        context = paragraph['context']
+        plausible = qa.get("plausible_answers", [])
+
+        action = {
+            'qaid': qa['id'],
+            'text': context + '\n' + question,
+            'labels': answers,
+            'plausible_answers': plausible,
+            'episode_done': True,
+        }
+        return action
+
+    def _setup_data(self, path):
+        with open(path) as data_file:
+            self.squad = json.load(data_file)['data']
+        self.examples = []
+
+        for article_idx in range(len(self.squad)):
+            article = self.squad[article_idx]
+            for paragraph_idx in range(len(article['paragraphs'])):
+                paragraph = article['paragraphs'][paragraph_idx]
+                num_questions = len(paragraph['qas'])
+                for qa_idx in range(num_questions):
+                    if not paragraph['qas'][qa_idx]["is_impossible"]:
+                        self.examples.append((article_idx, paragraph_idx, qa_idx))
+
+
+
 class OpenSquadTeacher(DialogTeacher):
     """This version of SQuAD inherits from the core Dialog Teacher, which just
     requires it to define an iterator over its data `setup_data` in order to
