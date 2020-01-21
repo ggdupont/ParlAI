@@ -27,6 +27,7 @@ class BertqaAgent(Agent):
         self.id = self.__class__.__name__
         self.top_k_doc = self.opt.get('top_k_doc')
         self.batch_size = self.opt.get('batch_size')
+        self.top_k_candidates = self.opt.get('top_k_candidates')
 
         self.model = Inferencer.load(self.model_path, batch_size=self.batch_size, gpu=False)
         logging.getLogger('farm.data_handler.processor').setLevel(logging.ERROR)
@@ -57,12 +58,12 @@ class BertqaAgent(Agent):
     def report(self):
         return self.report_log
 
-    def build_predictions(self, inferences, solr_docs, k_top_candidates=4):
+    def build_predictions(self, inferences, solr_docs):
         predictions = []
         top_k_span = 3
         candidates = []
         sorted_candidates = get_candidates(inferences, order=True)
-        sorted_candidates = sorted_candidates[:k_top_candidates]
+        sorted_candidates = sorted_candidates[:self.top_k_candidates]
 
         solr_docs_set = {}
         for i, d in enumerate(solr_docs):
