@@ -115,7 +115,7 @@ class BertqaAgent(Agent):
         reply['id'] = self.getID()
 
         if self.solr_docs:
-            solr_docs = self.solr_docs[:self.top_k_doc]
+            solr_docs = self.solr_docs[:(self.top_k_doc+1)]
 
             top_passages = []
             for d in solr_docs:
