@@ -5,8 +5,8 @@ import os
 def download(datapath, version='v1.0'):
     dpath = os.path.join(datapath, 'models', 'bertqa')
 
-    if not build_data.built(dpath, version):
-        print('[downloading bertqa models: ' + dpath + ']')
+    #if not build_data.built(dpath, version):
+    #    print('[downloading bertqa models: ' + dpath + ']')
         # if build_data.built(dpath):
         #     # An older version exists, so remove these outdated files.
         #     build_data.remove_dir(dpath)
@@ -19,4 +19,4 @@ def download(datapath, version='v1.0'):
         #     build_data.download(url, dpath, fname)
 
         # Mark the data as built.
-        build_data.mark_done(dpath, version)
+        # build_data.mark_done(dpath, version)
