@@ -1,4 +1,5 @@
 from parlai.core.agents import Agent
+from parlai.core.build_data import modelzoo_path
 
 import copy
 import uuid
@@ -17,7 +18,9 @@ class BertqaAgent(Agent):
     def __init__(self, opt, userid=None):
         # initialize defaults first
         super().__init__(opt, userid)
-        self.model_path = self.opt.get('init_model')
+        self.model_path = modelzoo_path(
+            self.opt.get('datapath'), self.opt.get('init_model')
+        )
         self.proxies = {}
         self.episode_done = False
         self.solr_docs = None
