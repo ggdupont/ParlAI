@@ -10,3 +10,4 @@ python examples/eval_model.py -m bertqa -t fcom:DefaultWithId --init-model model
 ## Multi task
 python examples/eval_model.py -m bertqa -t fcom:DefaultWithId --init-model models:bertqa/bert-english-qa-large --report report_bertqa_large.json
 python examples/eval_model.py -m bertqa -t squad:Index --init-model models:bertqa/bert-english-qa-large --report report_bertqa_large.json
+python examples/eval_model.py -m bertqa -t squad2:Index --init-model models:bertqa/distilbert-base-uncased-distilled-squad --report report_bertdistillqa_squad.json

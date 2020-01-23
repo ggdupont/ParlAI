@@ -54,6 +54,8 @@ class IndexTeacher(FixedDialogTeacher):
             for a in qa['answers']:
                 answers.append(a['text'])
                 answer_starts.append(a['answer_start'])
+        else:
+            answers = ['']
         context = paragraph['context']
         plausible = qa.get("plausible_answers", [])
 
