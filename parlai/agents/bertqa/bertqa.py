@@ -37,7 +37,7 @@ class BertqaAgent(Agent):
         if self.opt.get('top_k_candidates'):
             self.top_k_candidates = self.opt.get('top_k_candidates')
 
-        self.model = Inferencer.load(self.model_path, batch_size=self.batch_size, gpu=False)
+        self.model = Inferencer.load(self.model_path, batch_size=self.batch_size)
         logging.getLogger('farm.data_handler.processor').setLevel(logging.ERROR)
         logging.getLogger('farm.infer').setLevel(logging.ERROR)
         
@@ -81,7 +81,8 @@ class BertqaAgent(Agent):
         top_k_span = 3
         candidates = []
         sorted_candidates = get_candidates(inferences, order=True)
-        sorted_candidates = sorted_candidates[:(self.top_k_candidates+1)]
+        sorted_candidates = list(filter(lambda c: c.span != '', sorted_candidates))
+        sorted_candidates = sorted_candidates[:self.top_k_candidates]
 
         solr_docs_set = {}
         for i, d in enumerate(solr_docs):
