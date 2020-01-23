@@ -34,7 +34,7 @@ if __name__ == '__main__':
             exclude=('data', 'docs', 'downloads', 'examples', 'logs', 'tests')
         ),
         install_requires=reqs.strip().split('\n'),
-        dependency_links=['git+git://github.com/ckobus/FARM@multitask_QA#egg=farm'],
+        dependency_links=[],
         include_package_data=True,
         entry_points={"flake8.extension": ["PAI = parlai.utils.flake8:ParlAIChecker"]},
     )
