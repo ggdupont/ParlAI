@@ -40,7 +40,7 @@ class BertqaAgent(Agent):
         if self.opt.get('top_k_candidates'):
             self.top_k_candidates = self.opt.get('top_k_candidates')
 
-        self.model = Inferencer.load(self.model_path, batch_size=self.batch_size, gpu=True)
+        self.model = Inferencer.load(self.model_path, batch_size=self.batch_size)
         logging.getLogger('farm.data_handler.processor').setLevel(logging.ERROR)
         logging.getLogger('farm.infer').setLevel(logging.ERROR)
         
