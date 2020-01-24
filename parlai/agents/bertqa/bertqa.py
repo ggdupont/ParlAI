@@ -81,11 +81,10 @@ class BertqaAgent(Agent):
 
     def build_predictions_with_solr_docs(self, inferences, solr_docs):
         predictions = []
-        top_k_span = 3
         candidates = []
         sorted_candidates = get_candidates(inferences, order=True)
-        sorted_candidates = list(filter(lambda c: c.span != '', sorted_candidates))
-        sorted_candidates = sorted_candidates[:self.top_k_candidates]
+        # Filter to remove empty span
+        # sorted_candidates = list(filter(lambda c: c.span != '', sorted_candidates))
 
         solr_docs_set = {}
         for i, d in enumerate(solr_docs):
@@ -100,15 +99,18 @@ class BertqaAgent(Agent):
                     'doc_ident': doc['code'][0],
                     'doc_title': doc['title_text'][0],
                     'highlight': sc.context_string,
+                    'answer_type': sc.ans_type,
+                    'answer_type_prob': sc.ans_type_prob,
                     'answer': sc.span,
                     'doc_rank': rank,
                     'doc_score': doc['score'],
-                    'answer_rank': i,
-                    'answer_score': sc.answer_score,
-                    'combined_score': doc['score']*sc.answer_score  # TODO: tune
+                    'answer_rank': sc.span_rank,
+                    'answer_score': 1. / sc.span_rank, # TODO : to be changed / tune
+                    'combined_score': doc['score'] * (1. / sc.span_rank)  # TODO: tune
                 }
                 sorted_candidates_with_docs.append(c)
-        sorted_candidates_with_docs = sorted(sorted_candidates_with_docs, key=lambda c: c['combined_score'], reverse=True)
+        # TODO to be tuned
+        sorted_candidates_with_docs = sorted(sorted_candidates_with_docs, key=lambda c: c['answer_score'], reverse=True)
         return sorted_candidates_with_docs
     
     def report(self):
@@ -157,7 +159,6 @@ class BertqaAgent(Agent):
             )
 
             sorted_candidates = get_candidates(inferences, order=True)
-            sorted_candidates = sorted_candidates[:self.top_k_candidates]
 
             reply['text'] = sorted_candidates[0].span
             reply['text_candidates'] = []
