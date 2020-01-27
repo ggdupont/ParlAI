@@ -105,6 +105,7 @@ class BertqaAgent(Agent):
                     'doc_rank': rank,
                     'doc_score': doc['score'],
                     'answer_rank': sc.span_rank,
+                    'span_score': sc.span_score,
                     'answer_score': 1. / sc.span_rank, # TODO : to be changed / tune
                     'combined_score': doc['score'] * (1. / sc.span_rank)  # TODO: tune
                 }
